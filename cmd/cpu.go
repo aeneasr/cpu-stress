@@ -18,9 +18,10 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/bcrypt"
 	"github.com/pborman/uuid"
-	"runtime"
 	"fmt"
 	"sync"
+	"runtime"
+	"strconv"
 )
 
 // cpuCmd represents the cpu command
@@ -34,8 +35,13 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		cpus := int64(runtime.NumCPU())
+		if len(args) > 0 {
+			cpus, _ = strconv.ParseInt(args[0], 10, 64)
+		}
+
 		var wg sync.WaitGroup
-		for i := 0; i <= runtime.NumCPU(); i++ {
+		for i := 0; i <= int(cpus); i++ {
 			wg.Add(1)
 			fmt.Printf("Starting thread %d\n", i)
 			go cpuStress()
